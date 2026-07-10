@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学笔记</title>
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        // Configure MathJax to process formulas on page load
+        window.MathJax = {
+            startup: {
+                typeset: true
+            },
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        /* Symbol toolbar - full width at top */
+        .symbol-toolbar-container {
+            width: 100%;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .symbol-toolbar {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .editor-section {
+            flex: 1;
+            min-width: 50%;
+        }
+
+        .preview-section {
+            flex: 1;
+            min-width: 50%;
+            border-left: 3px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Symbol buttons */
+        .symbol-group {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .symbol-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .symbol-group-title {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .symbol-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .symbol-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 3px 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .symbol-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Editor with line numbers */
+        .editor-container {
+            position: relative;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .editor-wrapper {
+            display: flex;
+            overflow: auto;
+            max-height: 500px;
+        }
+
+        .line-numbers {
+            background: #f5f5f5;
+            color: #888;
+            padding: 2px 5px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5em;
+            user-select: none;
+            min-width: 40px;
+            border-right: 1px solid #dee2e6;
+            white-space: pre;
+        }
+
+        .editor-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #mathEditor {
+            width: 100%;
+            min-height: 450px;
+            padding: 2px;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5em;
+            resize: both;
+            overflow: auto;
+            white-space: pre;
+        }
+
+        #mathEditor:focus {
+            background: #fafafa;
+        }
+
+        /* Preview area */
+        .preview-container {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 500px;
+            max-height: 500px;
+            overflow: auto;
+            background: #fafafa;
+        }
+
+        #previewContent {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-image {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-image:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-refresh {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Filename input */
+        .filename-input-container {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filename-input-container label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .filename-input-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filename-input-container input:focus {
+            border-color: #667eea;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .editor-title {
+            font-size: 1.2em;
+            color: #333;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* File Manager */
+        .file-manager {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .file-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .file-name:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-load {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .loading-text {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Status message */
+        .status-message {
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .preview-section {
+                border-left: none;
+                border-top: 3px solid #667eea;
+                padding-left: 0;
+                padding-top: 20px;
+            }
+        }
+
+        /* Hidden file input */
+        #imageInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 数学笔记</h1>
+            <p>支持 LaTeX 公式编辑与实时预览</p>
+        </div>
+
+        <div class="symbol-toolbar-container">
+            <!-- Symbol toolbar -->
+            <div class="symbol-toolbar">
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">几何符号</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\angle')" title="角">⦟</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\triangle')" title="三角形">⨺</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\square')" title="正方形">⬜</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\bigcirc')" title="圆">⬤</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\perp')" title="垂直">⟂</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\parallel')" title="平行">⫽</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\cong')" title="全等">≌</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sim')" title="相似">∽</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\therefore')" title="所以">∴</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\because')" title="因为">∵</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">希腊字母（小写）</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\alpha')">α</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\beta')">β</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\gamma')">γ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\delta')">δ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\epsilon')">ε</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\zeta')">ζ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\eta')">η</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\theta')">θ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\iota')">ι</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\kappa')">κ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\lambda')">λ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\mu')">μ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\nu')">ν</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\xi')">ξ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\pi')">π</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\rho')">ρ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sigma')">σ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\tau')">τ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\upsilon')">υ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\phi')">φ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\chi')">χ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\psi')">ψ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\omega')">ω</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">希腊字母（大写）</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\Gamma')">Γ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Delta')">Δ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Theta')">Θ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Lambda')">Λ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Xi')">Ξ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Pi')">Π</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Sigma')">Σ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Upsilon')">Υ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Phi')">Φ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Psi')">Ψ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Omega')">Ω</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">常用运算</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\frac{}{}')">⨋</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sqrt{}')">√</button>
+                            <button class="symbol-btn" onclick="insertSymbol('^{}')">ˣ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('_{}')">ₓ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sum')">∑</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\int')">∫</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\prod')">∏</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\lim')">lim</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\infty')">∞</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\pm')">±</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\times')">×</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\div')">÷</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">括号与集合</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\left( \\right)')">( )</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\left[ \\right]')">[ ]</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\left\\{ \\right\\}')">{ }</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\in')">∈</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\notin')">∉</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\subset')">⊂</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\supset')">⊃</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\cup')">∪</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\cap')">∩</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\emptyset')">∅</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">关系符号</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('=')">＝</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\neq')">≠</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\approx')">≈</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\leq')">≤</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\geq')">≥</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\lt')"><</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">&gt;</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\equiv')">≡</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\propto')">∝</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">带圈数字</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{1}')">①</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{2}')">②</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{3}')">③</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{4}')">④</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{5}')">⑤</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{6}')">⑥</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{7}')">⑦</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{8}')">⑧</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{9}')">⑨</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{10}')">⑩</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="editor-section">
+                <!-- Editor header with title and filename input in one row -->
+                <div class="editor-header">
+                    <div class="editor-title">编辑器</div>
+                    <div class="filename-input-container" style="margin-bottom: 0; flex: 1;">
+                        <label for="filenameInput">文件名:</label>
+                        <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
+                    </div>
+                </div>
+                <!-- Editor with line numbers -->
+                <div class="editor-container">
+                    <div class="editor-wrapper">
+                        <div class="line-numbers" id="lineNumbers">1</div>
+                        <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
+                    </div>
+                </div>
+
+                <div id="saveStatus" class="status-message"></div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-title">实时预览</div>
+                <div class="preview-container">
+                    <div id="previewContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-save" onclick="saveNote()">
+                💾 保存笔记
+            </button>
+            <button class="btn btn-image" onclick="document.getElementById('imageInput').click()">
+                📷 图片识别导入
+            </button>
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+            <!-- Hidden file input for directory selection -->
+            <input type="file" id="directoryInput" webkitdirectory mozdirectory msdirectory odirectory directory style="display: none;">
+        </div>
+
+        <!-- File Manager Section -->
+        <div class="file-manager">
+            <div class="file-manager-header">
+                <div class="section-title">📁 文件管理器</div>
+                <button class="btn btn-refresh" onclick="loadFileList()">
+                    🔄 刷新
+                </button>
+            </div>
+            <div class="file-list" id="fileList">
+                <p class="loading-text">加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('mathEditor');
+        const previewContent = document.getElementById('previewContent');
+        const lineNumbers = document.getElementById('lineNumbers');
+        const saveStatus = document.getElementById('saveStatus');
+
+        // Update line numbers
+        function updateLineNumbers() {
+            const lines = editor.value.split('\n');
+            const lineCount = Math.max(lines.length, 20);
+            let lineNumHTML = '';
+            for (let i = 1; i <= lineCount; i++) {
+                if (i > 1) {
+                    lineNumHTML += '\n';
+                }
+                lineNumHTML += i;
+            }
+            lineNumbers.textContent = lineNumHTML;
+        }
+
+        // Insert symbol at cursor position
+        function insertSymbol(symbol) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const text = editor.value;
+            
+            editor.value = text.substring(0, start) + symbol + text.substring(end);
+            editor.focus();
+            editor.selectionStart = editor.selectionEnd = start + symbol.length;
+            
+            updatePreview();
+            updateLineNumbers();
+        }
+
+        // Update preview with MathJax rendering
+        function updatePreview() {
+            let content = editor.value;
+            
+            // Convert line breaks to HTML
+            content = content.replace(/\n/g, '<br>');
+            
+            previewContent.innerHTML = content;
+            
+            // Render MathJax - process both $...$ and $$...$$ directly
+            if (window.MathJax) {
+                MathJax.typesetPromise([previewContent]).catch((err) => console.log(err));
+            }
+            
+            updateLineNumbers();
+        }
+
+        // Save note
+        async function saveNote() {
+            const content = editor.value;
+            
+            // Get filename from input field
+            const filenameInput = document.getElementById('filenameInput');
+            let filename = filenameInput.value.trim();
+            
+            if (!filename || filename === '') {
+                showStatus('❌ 请输入文件名', 'error');
+                filenameInput.focus();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        content: content,
+                        filename: filename
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`✅ ${result.message} 文件名：${result.filename}`, 'success');
+                    // Refresh file list after saving
+                    loadFileList();
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 保存失败：${error.message}`, 'error');
+            }
+        }
+
+        // Load file list
+        async function loadFileList() {
+            const fileListDiv = document.getElementById('fileList');
+            fileListDiv.innerHTML = '<p class="loading-text">加载中...</p>';
+            
+            try {
+                const response = await fetch('/files');
+                const result = await response.json();
+                
+                if (result.success && result.files.length > 0) {
+                    let html = '';
+                    result.files.forEach(file => {
+                        html += `
+                            <div class="file-item">
+                                <a href="#" class="file-name" onclick="loadFile('${file.filename}'); return false;">📄 ${file.filename}</a>
+                                <div class="file-actions">
+                                    <button class="btn btn-sm btn-load" onclick="loadFile('${file.filename}')">加载</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteFile('${file.filename}')">删除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    fileListDiv.innerHTML = html;
+                } else {
+                    fileListDiv.innerHTML = '<p class="loading-text">暂无文件</p>';
+                }
+            } catch (error) {
+                fileListDiv.innerHTML = `<p class="loading-text">加载失败：${error.message}</p>`;
+            }
+        }
+
+        // Load file content into editor
+        async function loadFile(filename) {
+            try {
+                const response = await fetch(`/load_file?filename=${encodeURIComponent(filename)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    editor.value = result.content;
+                    // Set filename in input field (without extension)
+                    const filenameInput = document.getElementById('filenameInput');
+                    filenameInput.value = filename.replace('.md', '');
+                    updatePreview();
+                    showStatus(`✅ 文件 "${filename}" 已加载`, 'success');
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 加载失败：${error.message}`, 'error');
+            }
+        }
+
+        // Delete file
+        async function deleteFile(filename) {
+            if (!confirm(`确定要删除文件 "${filename}" 吗？此操作不可恢复。`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/delete_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filename: filename })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`✅ ${result.message}`, 'success');
+                    loadFileList();
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 删除失败：${error.message}`, 'error');
+            }
+        }
+
+        // Handle image upload
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('/upload_image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Insert recognized text into editor
+                    const start = editor.selectionStart;
+                    const text = editor.value;
+                    editor.value = text.substring(0, start) + result.recognized_text + text.substring(editor.selectionEnd);
+                    editor.focus();
+                    
+                    showStatus(`✅ ${result.message}`, 'success');
+                    updatePreview();
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 图片处理失败：${error.message}`, 'error');
+            }
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            saveStatus.textContent = message;
+            saveStatus.className = `status-message status-${type}`;
+            saveStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                saveStatus.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event listeners
+        editor.addEventListener('input', updatePreview);
+        editor.addEventListener('scroll', () => {
+            lineNumbers.scrollTop = editor.scrollTop;
+        });
+
+        // Initialize
+        updateLineNumbers();
+        updatePreview();
+        loadFileList();
+    </script>
+</body>
+</html>
