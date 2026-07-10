@@ -17,12 +17,22 @@ def index():
 def save_note():
     """Save the note content to a file"""
     try:
-        content = request.json.get('content', '')
+        data = request.json
+        content = data.get('content', '')
+        save_path = data.get('save_path', 'uploads')
+        
+        # Ensure the save path is within the app directory for security
+        if not os.path.isabs(save_path):
+            save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), save_path)
+        
+        # Ensure the directory exists
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
         
         # Generate filename with timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f'math_note_{timestamp}.md'
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        filepath = os.path.join(save_path, filename)
         
         # Save content to file
         with open(filepath, 'w', encoding='utf-8') as f:
