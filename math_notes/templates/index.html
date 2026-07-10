@@ -97,6 +97,9 @@
         /* Symbol buttons */
         .symbol-group {
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .symbol-group:last-child {
@@ -104,10 +107,10 @@
         }
 
         .symbol-group-title {
-            font-size: 0.75em;
+            font-size: 0.85em;
             color: #666;
-            margin-bottom: 3px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .symbol-buttons {
@@ -269,6 +272,7 @@
             font-weight: 600;
             color: #333;
             font-size: 14px;
+            white-space: nowrap;
         }
 
         .filename-input-container input {
@@ -283,6 +287,20 @@
 
         .filename-input-container input:focus {
             border-color: #667eea;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .editor-title {
+            font-size: 1.2em;
+            color: #333;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         /* File Manager */
@@ -519,9 +537,25 @@
                             <button class="symbol-btn" onclick="insertSymbol('\\leq')">≤</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\geq')">≥</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\lt')"><</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">></button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">&gt;</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\equiv')">≡</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\propto')">∝</button>
+                        </div>
+                    </div>
+
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">带圈数字</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{1}')">①</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{2}')">②</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{3}')">③</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{4}')">④</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{5}')">⑤</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{6}')">⑥</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{7}')">⑦</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{8}')">⑧</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{9}')">⑨</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{10}')">⑩</button>
                         </div>
                     </div>
                 </div>
@@ -530,14 +564,14 @@
 
         <div class="main-content">
             <div class="editor-section">
-                <div class="section-title">编辑器</div>
-
-                <!-- Filename input -->
-                <div class="filename-input-container">
-                    <label for="filenameInput">文件名:</label>
-                    <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
+                <!-- Editor header with title and filename input in one row -->
+                <div class="editor-header">
+                    <div class="editor-title">编辑器</div>
+                    <div class="filename-input-container" style="margin-bottom: 0; flex: 1;">
+                        <label for="filenameInput">文件名:</label>
+                        <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
+                    </div>
                 </div>
-
                 <!-- Editor with line numbers -->
                 <div class="editor-container">
                     <div class="editor-wrapper">
