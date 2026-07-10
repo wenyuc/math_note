@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify, send_file
 import os
 from datetime import datetime
+import re
+import requests
+from dashscope import Generation
 
 app = Flask(__name__)
 
@@ -183,6 +186,77 @@ def upload_image():
         return jsonify({
             'success': False,
             'message': f'Error processing image: {str(e)}'
+        }), 500
+
+@app.route('/import_url', methods=['POST'])
+def import_url():
+    """Import content from a URL and convert math formulas to LaTeX using Qwen model"""
+    try:
+        data = request.json
+        url = data.get('url', '')
+        
+        if not url:
+            return jsonify({
+                'success': False,
+                'message': '未提供 URL 地址'
+            }), 400
+        
+        # Fetch the webpage content
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()
+        
+        # Get the HTML content
+        html_content = response.text
+        
+        # Use Qwen model to extract text and convert math formulas to LaTeX
+        prompt = f"""请分析以下网页内容，完成以下任务：
+1. 提取网页中的主要文本内容（忽略导航、广告等无关内容）
+2. 识别其中的数学公式，将其转换为 LaTeX 格式
+   - 行内公式使用 $...$ 包裹
+   - 独立公式使用 $$...$$ 包裹
+3. 保持原文的结构和逻辑
+
+网页内容如下：
+{html_content[:15000]}  # Limit content length to avoid token limits
+
+请直接返回处理后的内容，不需要额外说明。"""
+
+        # Call Qwen model
+        response = Generation.call(
+            model='qwen-plus',
+            messages=[
+                {'role': 'system', 'content': '你是一个数学公式转换助手，擅长从网页内容中提取文本并将数学公式转换为 LaTeX 格式。'},
+                {'role': 'user', 'content': prompt}
+            ],
+            max_tokens=4000
+        )
+        
+        if response.status_code == 200:
+            converted_content = response.output.choices[0].message.content
+            
+            return jsonify({
+                'success': True,
+                'content': converted_content,
+                'message': '导入成功'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': f'AI 模型调用失败：{response.message}'
+            }), 500
+            
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'success': False,
+            'message': f'获取网页内容失败：{str(e)}'
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'处理过程中出错：{str(e)}'
         }), 500
 
 if __name__ == '__main__':
