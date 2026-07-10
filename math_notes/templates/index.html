@@ -502,49 +502,36 @@
         async function saveNote() {
             const content = editor.value;
             
-            // Create a temporary input element to trigger directory selection
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.webkitdirectory = true;
-            input.mozdirectory = true;
-            input.directory = true;
+            // Prompt user for filename
+            const filename = prompt('请输入文件名（不需要扩展名）:', 'math_note_' + new Date().toISOString().slice(0,10).replace(/-/g,''));
             
-            input.onchange = async (e) => {
-                const files = e.target.files;
-                let selectedPath = '';
-                
-                if (files.length > 0) {
-                    // Get the directory path from the first file
-                    const firstFile = files[0];
-                    selectedPath = firstFile.webkitRelativePath.split('/')[0];
-                }
-                
-                try {
-                    const response = await fetch('/save', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            content: content,
-                            save_path: selectedPath || 'uploads'
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showStatus(`✅ ${result.message} 文件名：${result.filename}`, 'success');
-                    } else {
-                        showStatus(`❌ ${result.message}`, 'error');
-                    }
-                } catch (error) {
-                    showStatus(`❌ 保存失败：${error.message}`, 'error');
-                }
-            };
+            if (!filename || filename.trim() === '') {
+                showStatus('❌ 已取消保存', 'error');
+                return;
+            }
             
-            // Trigger the file input click
-            input.click();
+            try {
+                const response = await fetch('/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        content: content,
+                        filename: filename.trim()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`✅ ${result.message} 文件名：${result.filename}`, 'success');
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 保存失败：${error.message}`, 'error');
+            }
         }
 
         // Handle image upload

@@ -19,20 +19,26 @@ def save_note():
     try:
         data = request.json
         content = data.get('content', '')
-        save_path = data.get('save_path', 'uploads')
+        user_filename = data.get('filename', '')
         
-        # Ensure the save path is within the app directory for security
-        if not os.path.isabs(save_path):
-            save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), save_path)
+        # Use the uploads folder
+        save_path = UPLOAD_FOLDER
         
         # Ensure the directory exists
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         
-        # Generate filename with timestamp
+        # Generate filename with timestamp, using user-provided name if available
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f'math_note_{timestamp}.md'
-        filepath = os.path.join(save_path, filename)
+        if user_filename and user_filename.strip():
+            # Sanitize the filename to prevent path traversal
+            filename = ''.join(c for c in user_filename.strip() if c.isalnum() or c in ('_', '-', '.')).strip('.')
+            if not filename:
+                filename = f'math_note_{timestamp}'
+        else:
+            filename = f'math_note_{timestamp}'
+        
+        filepath = os.path.join(save_path, f'{filename}.md')
         
         # Save content to file
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -40,13 +46,13 @@ def save_note():
         
         return jsonify({
             'success': True,
-            'message': f'Note saved successfully!',
-            'filename': filename
+            'message': f'笔记保存成功！',
+            'filename': f'{filename}.md'
         })
     except Exception as e:
         return jsonify({
             'success': False,
-            'message': f'Error saving note: {str(e)}'
+            'message': f'保存失败：{str(e)}'
         }), 500
 
 @app.route('/upload_image', methods=['POST'])
