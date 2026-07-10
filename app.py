@@ -235,17 +235,46 @@ def import_url():
         )
         
         if response.status_code == 200:
-            converted_content = response.output.choices[0].message.content
+            # Safely extract the content from the response
+            converted_content = None
             
-            return jsonify({
-                'success': True,
-                'content': converted_content,
-                'message': '导入成功'
-            })
+            # Try different possible response structures
+            if hasattr(response, 'output') and response.output:
+                if hasattr(response.output, 'choices') and response.output.choices:
+                    if len(response.output.choices) > 0:
+                        choice = response.output.choices[0]
+                        if hasattr(choice, 'message') and choice.message:
+                            if hasattr(choice.message, 'content'):
+                                converted_content = choice.message.content
+                
+                # Fallback: try to get content directly from output if choices is None
+                if converted_content is None and hasattr(response.output, 'text'):
+                    converted_content = response.output.text
+            
+            # If still no content, try accessing as dictionary-like structure
+            if converted_content is None:
+                output_dict = getattr(response, 'output', None)
+                if output_dict and isinstance(output_dict, dict):
+                    if 'choices' in output_dict and output_dict['choices']:
+                        converted_content = output_dict['choices'][0].get('message', {}).get('content')
+                    elif 'text' in output_dict:
+                        converted_content = output_dict['text']
+            
+            if converted_content:
+                return jsonify({
+                    'success': True,
+                    'content': converted_content,
+                    'message': '导入成功'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': f'AI 模型返回了空响应：{str(response)}'
+                }), 500
         else:
             return jsonify({
                 'success': False,
-                'message': f'AI 模型调用失败：{response.message}'
+                'message': f'AI 模型调用失败：{getattr(response, "message", str(response))}'
             }), 500
             
     except requests.exceptions.RequestException as e:
