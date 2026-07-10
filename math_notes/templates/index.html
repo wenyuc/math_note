@@ -7,6 +7,18 @@
     <!-- MathJax for LaTeX rendering -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        // Configure MathJax to process formulas on page load
+        window.MathJax = {
+            startup: {
+                typeset: true
+            },
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
     <style>
         * {
             margin: 0;
@@ -42,6 +54,21 @@
             margin-bottom: 5px;
         }
 
+        /* Symbol toolbar - full width at top */
+        .symbol-toolbar-container {
+            width: 100%;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .symbol-toolbar {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
         .main-content {
             display: flex;
             gap: 20px;
@@ -68,14 +95,6 @@
         }
 
         /* Symbol buttons */
-        .symbol-toolbar {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
         .symbol-group {
             margin-bottom: 10px;
         }
@@ -286,12 +305,9 @@
             <p>支持 LaTeX 公式编辑与实时预览</p>
         </div>
 
-        <div class="main-content">
-            <div class="editor-section">
-                <div class="section-title">编辑器</div>
-                
-                <!-- Symbol toolbar -->
-                <div class="symbol-toolbar">
+        <div class="symbol-toolbar-container">
+            <!-- Symbol toolbar -->
+            <div class="symbol-toolbar">
                     <div class="symbol-group">
                         <div class="symbol-group-title">几何符号</div>
                         <div class="symbol-buttons">
@@ -403,6 +419,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="editor-section">
+                <div class="section-title">编辑器</div>
 
                 <!-- Editor with line and column numbers -->
                 <div class="editor-container">
@@ -478,18 +500,12 @@
         function updatePreview() {
             let content = editor.value;
             
-            // Convert LaTeX inline formulas $...$ to MathJax format
-            content = content.replace(/\$(.*?)\$/g, '\\($1\\)');
-            
-            // Convert display formulas $$...$$ to MathJax format
-            content = content.replace(/\$\$(.*?)\$\$/g, '\\[$1\\]');
-            
             // Convert line breaks to HTML
             content = content.replace(/\n/g, '<br>');
             
             previewContent.innerHTML = content;
             
-            // Render MathJax
+            // Render MathJax - process both $...$ and $$...$$ directly
             if (window.MathJax) {
                 MathJax.typesetPromise([previewContent]).catch((err) => console.log(err));
             }
