@@ -55,6 +55,102 @@ def save_note():
             'message': f'保存失败：{str(e)}'
         }), 500
 
+@app.route('/files', methods=['GET'])
+def list_files():
+    """List all saved note files"""
+    try:
+        files = []
+        if os.path.exists(UPLOAD_FOLDER):
+            for filename in os.listdir(UPLOAD_FOLDER):
+                if filename.endswith('.md'):
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    files.append({
+                        'filename': filename,
+                        'modified': datetime.fromtimestamp(os.path.getmtime(filepath)).strftime('%Y-%m-%d %H:%M:%S')
+                    })
+            # Sort by modified time (newest first)
+            files.sort(key=lambda x: x['modified'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'files': files
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'获取文件列表失败：{str(e)}'
+        }), 500
+
+@app.route('/load_file', methods=['GET'])
+def load_file():
+    """Load file content into editor"""
+    try:
+        filename = request.args.get('filename', '')
+        if not filename:
+            return jsonify({
+                'success': False,
+                'message': '未指定文件名'
+            }), 400
+        
+        # Sanitize filename
+        filename = os.path.basename(filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        if not os.path.exists(filepath):
+            return jsonify({
+                'success': False,
+                'message': '文件不存在'
+            }), 404
+        
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        return jsonify({
+            'success': True,
+            'content': content,
+            'filename': filename
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'加载文件失败：{str(e)}'
+        }), 500
+
+@app.route('/delete_file', methods=['POST'])
+def delete_file():
+    """Delete a saved note file"""
+    try:
+        data = request.json
+        filename = data.get('filename', '')
+        
+        if not filename:
+            return jsonify({
+                'success': False,
+                'message': '未指定文件名'
+            }), 400
+        
+        # Sanitize filename
+        filename = os.path.basename(filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        if not os.path.exists(filepath):
+            return jsonify({
+                'success': False,
+                'message': '文件不存在'
+            }), 404
+        
+        os.remove(filepath)
+        
+        return jsonify({
+            'success': True,
+            'message': f'文件 "{filename}" 已删除'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'删除文件失败：{str(e)}'
+        }), 500
+
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
     """Handle image upload for OCR recognition (placeholder for future implementation)"""

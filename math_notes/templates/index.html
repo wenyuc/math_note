@@ -247,6 +247,123 @@
             box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
         }
 
+        .btn-refresh {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Filename input */
+        .filename-input-container {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filename-input-container label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .filename-input-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filename-input-container input:focus {
+            border-color: #667eea;
+        }
+
+        /* File Manager */
+        .file-manager {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .file-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .file-name:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-load {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .loading-text {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+
         /* Status message */
         .status-message {
             padding: 10px 20px;
@@ -415,6 +532,12 @@
             <div class="editor-section">
                 <div class="section-title">编辑器</div>
 
+                <!-- Filename input -->
+                <div class="filename-input-container">
+                    <label for="filenameInput">文件名:</label>
+                    <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
+                </div>
+
                 <!-- Editor with line numbers -->
                 <div class="editor-container">
                     <div class="editor-wrapper">
@@ -444,6 +567,19 @@
             <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
             <!-- Hidden file input for directory selection -->
             <input type="file" id="directoryInput" webkitdirectory mozdirectory msdirectory odirectory directory style="display: none;">
+        </div>
+
+        <!-- File Manager Section -->
+        <div class="file-manager">
+            <div class="file-manager-header">
+                <div class="section-title">📁 文件管理器</div>
+                <button class="btn btn-refresh" onclick="loadFileList()">
+                    🔄 刷新
+                </button>
+            </div>
+            <div class="file-list" id="fileList">
+                <p class="loading-text">加载中...</p>
+            </div>
         </div>
     </div>
 
@@ -502,11 +638,13 @@
         async function saveNote() {
             const content = editor.value;
             
-            // Prompt user for filename
-            const filename = prompt('请输入文件名（不需要扩展名）:', 'math_note_' + new Date().toISOString().slice(0,10).replace(/-/g,''));
+            // Get filename from input field
+            const filenameInput = document.getElementById('filenameInput');
+            let filename = filenameInput.value.trim();
             
-            if (!filename || filename.trim() === '') {
-                showStatus('❌ 已取消保存', 'error');
+            if (!filename || filename === '') {
+                showStatus('❌ 请输入文件名', 'error');
+                filenameInput.focus();
                 return;
             }
             
@@ -518,7 +656,7 @@
                     },
                     body: JSON.stringify({ 
                         content: content,
-                        filename: filename.trim()
+                        filename: filename
                     })
                 });
                 
@@ -526,11 +664,93 @@
                 
                 if (result.success) {
                     showStatus(`✅ ${result.message} 文件名：${result.filename}`, 'success');
+                    // Refresh file list after saving
+                    loadFileList();
                 } else {
                     showStatus(`❌ ${result.message}`, 'error');
                 }
             } catch (error) {
                 showStatus(`❌ 保存失败：${error.message}`, 'error');
+            }
+        }
+
+        // Load file list
+        async function loadFileList() {
+            const fileListDiv = document.getElementById('fileList');
+            fileListDiv.innerHTML = '<p class="loading-text">加载中...</p>';
+            
+            try {
+                const response = await fetch('/files');
+                const result = await response.json();
+                
+                if (result.success && result.files.length > 0) {
+                    let html = '';
+                    result.files.forEach(file => {
+                        html += `
+                            <div class="file-item">
+                                <a href="#" class="file-name" onclick="loadFile('${file.filename}'); return false;">📄 ${file.filename}</a>
+                                <div class="file-actions">
+                                    <button class="btn btn-sm btn-load" onclick="loadFile('${file.filename}')">加载</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteFile('${file.filename}')">删除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    fileListDiv.innerHTML = html;
+                } else {
+                    fileListDiv.innerHTML = '<p class="loading-text">暂无文件</p>';
+                }
+            } catch (error) {
+                fileListDiv.innerHTML = `<p class="loading-text">加载失败：${error.message}</p>`;
+            }
+        }
+
+        // Load file content into editor
+        async function loadFile(filename) {
+            try {
+                const response = await fetch(`/load_file?filename=${encodeURIComponent(filename)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    editor.value = result.content;
+                    // Set filename in input field (without extension)
+                    const filenameInput = document.getElementById('filenameInput');
+                    filenameInput.value = filename.replace('.md', '');
+                    updatePreview();
+                    showStatus(`✅ 文件 "${filename}" 已加载`, 'success');
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 加载失败：${error.message}`, 'error');
+            }
+        }
+
+        // Delete file
+        async function deleteFile(filename) {
+            if (!confirm(`确定要删除文件 "${filename}" 吗？此操作不可恢复。`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/delete_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filename: filename })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`✅ ${result.message}`, 'success');
+                    loadFileList();
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 删除失败：${error.message}`, 'error');
             }
         }
 
@@ -590,6 +810,7 @@
         // Initialize
         updateLineNumbers();
         updatePreview();
+        loadFileList();
     </script>
 </body>
 </html>
