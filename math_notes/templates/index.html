@@ -96,7 +96,7 @@
 
         /* Symbol buttons */
         .symbol-group {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .symbol-group:last-child {
@@ -104,27 +104,27 @@
         }
 
         .symbol-group-title {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             font-weight: 600;
         }
 
         .symbol-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 3px;
         }
 
         .symbol-btn {
             background: white;
             border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 5px 10px;
+            border-radius: 3px;
+            padding: 3px 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             transition: all 0.2s;
-            min-width: 35px;
+            min-width: 24px;
             text-align: center;
         }
 
@@ -152,27 +152,28 @@
 
         .line-numbers {
             background: #f5f5f5;
-            color: #999;
-            padding: 10px 5px;
+            color: #888;
+            padding: 2px 5px;
             text-align: right;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.3;
             user-select: none;
-            min-width: 50px;
+            min-width: 40px;
             border-right: 1px solid #dee2e6;
         }
 
         .column-numbers {
             background: #f5f5f5;
-            color: #999;
-            padding: 5px 10px;
+            color: #888;
+            padding: 3px 10px;
             text-align: left;
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 11px;
             border-bottom: 1px solid #dee2e6;
             white-space: pre;
             overflow: hidden;
+            letter-spacing: 7.8px;
         }
 
         .editor-content {
@@ -184,12 +185,12 @@
         #mathEditor {
             width: 100%;
             min-height: 450px;
-            padding: 10px;
+            padding: 2px;
             border: none;
             outline: none;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.3;
             resize: both;
             overflow: auto;
             white-space: pre;
@@ -311,14 +312,14 @@
                     <div class="symbol-group">
                         <div class="symbol-group-title">几何符号</div>
                         <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('\\angle')" title="角">∠</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\triangle')" title="三角形">△</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\square')" title="正方形">□</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\bigcirc')" title="圆">○</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\perp')" title="垂直">⊥</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\parallel')" title="平行">∥</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\cong')" title="全等">≅</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\sim')" title="相似">∼</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\angle')" title="角">⦟</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\triangle')" title="三角形">⨺</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\square')" title="正方形">⬜</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\bigcirc')" title="圆">⬤</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\perp')" title="垂直">⟂</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\parallel')" title="平行">⫽</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\cong')" title="全等">≌</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sim')" title="相似">∽</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\therefore')" title="所以">∴</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\because')" title="因为">∵</button>
                         </div>
@@ -373,15 +374,15 @@
                     <div class="symbol-group">
                         <div class="symbol-group-title">常用运算</div>
                         <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('\\frac{}{}')">分数</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\sqrt{}')">根号</button>
-                            <button class="symbol-btn" onclick="insertSymbol('^{}')">上标</button>
-                            <button class="symbol-btn" onclick="insertSymbol('_{}')">下标</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\sum')">求和</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\int')">积分</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\prod')">乘积</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\lim')">极限</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\infty')">无穷</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\frac{}{}')">⨋</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sqrt{}')">√</button>
+                            <button class="symbol-btn" onclick="insertSymbol('^{}')">ˣ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('_{}')">ₓ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\sum')">∑</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\int')">∫</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\prod')">∏</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\lim')">lim</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\infty')">∞</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\pm')">±</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\times')">×</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\div')">÷</button>
@@ -407,13 +408,13 @@
                     <div class="symbol-group">
                         <div class="symbol-group-title">关系符号</div>
                         <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('=')">=</button>
+                            <button class="symbol-btn" onclick="insertSymbol('=')">＝</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\neq')">≠</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\approx')">≈</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\leq')">≤</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\geq')">≥</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\lt')">＜</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">＞</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\lt')"><</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">></button>
                             <button class="symbol-btn" onclick="insertSymbol('\\equiv')">≡</button>
                             <button class="symbol-btn" onclick="insertSymbol('\\propto')">∝</button>
                         </div>
@@ -428,7 +429,7 @@
 
                 <!-- Editor with line and column numbers -->
                 <div class="editor-container">
-                    <div class="column-numbers" id="columnNumbers">1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30</div>
+                    <div class="column-numbers" id="columnNumbers">1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40</div>
                     <div class="editor-wrapper">
                         <div class="line-numbers" id="lineNumbers">1</div>
                         <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
@@ -477,9 +478,11 @@
 
         // Update column numbers display
         function updateColumnNumbers() {
-            const currentLine = editor.value.split('\n')[editor.value.substr(0, editor.selectionStart).split('\n').length - 1] || '';
-            const colNum = editor.selectionStart - editor.value.lastIndexOf('\n', editor.selectionStart - 1);
-            columnNumbers.textContent = `列：${colNum}`;
+            let colDisplay = '';
+            for (let i = 1; i <= 40; i++) {
+                colDisplay += (i < 10 ? ' ' : '') + i + '  ';
+            }
+            columnNumbers.textContent = colDisplay;
         }
 
         // Insert symbol at cursor position
