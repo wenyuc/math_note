@@ -1,17 +1,42 @@
-# Examples
+```gitignore
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py~
 
-Input:
-### Added files:
-['math_notes/templates/index.html']
+# Dependencies
+venv/
+.venv/
+.env
+.env.local
+*.env.*
 
-### Deleted files:
-[]
+# Build artifacts
+build/
+dist/
+*.egg-info/
 
-### Modified files:
-['math_notes/templates/index.html']
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
 
-### Current .gitignore Content
-(empty)
+# Logs
+*.log
 
-Expected Output:
-(empty — output nothing)
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+```

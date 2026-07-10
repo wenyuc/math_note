@@ -42,9 +42,73 @@
             margin-bottom: 5px;
         }
 
+        /* Symbol panel - Area 1 */
+        .symbol-panel {
+            background: #f8f9fa;
+            border-bottom: 3px solid #667eea;
+            padding: 15px 20px;
+        }
+
+        .symbol-panel-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .symbol-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .symbol-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .symbol-row-label {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
+            padding-right: 10px;
+            border-right: 2px solid #dee2e6;
+        }
+
+        .symbol-row-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .symbol-btn-small {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 3px 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .symbol-btn-small:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        /* Main content - Area 2 with editor and preview side by side */
         .main-content {
             display: flex;
-            gap: 20px;
+            gap: 0;
             padding: 20px;
         }
 
@@ -52,11 +116,12 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            border-right: 3px solid #667eea;
+            padding-right: 20px;
         }
 
         .preview-section {
             flex: 1;
-            border-left: 3px solid #667eea;
             padding-left: 20px;
             display: flex;
             flex-direction: column;
@@ -67,62 +132,6 @@
             color: #333;
             margin-bottom: 10px;
             font-weight: 600;
-        }
-
-        /* Symbol buttons */
-        .symbol-toolbar {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            gap: 15px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .symbol-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 80px;
-        }
-
-        .symbol-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .symbol-group-title {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .symbol-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .symbol-btn {
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            min-width: 35px;
-            text-align: center;
-        }
-
-        .symbol-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateX(2px);
         }
 
         /* Editor container */
@@ -239,11 +248,26 @@
                 flex-direction: column;
             }
 
+            .editor-section {
+                border-right: none;
+                border-bottom: 3px solid #667eea;
+                padding-right: 0;
+                padding-bottom: 20px;
+            }
+
             .preview-section {
-                border-left: none;
-                border-top: 3px solid #667eea;
                 padding-left: 0;
                 padding-top: 20px;
+            }
+
+            .symbol-row-label {
+                text-align: left;
+                border-right: none;
+                border-bottom: 2px solid #dee2e6;
+                padding-right: 0;
+                padding-bottom: 5px;
+                min-width: auto;
+                width: 100%;
             }
         }
 
