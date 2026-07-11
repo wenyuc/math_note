@@ -149,7 +149,7 @@
 
         .editor-wrapper {
             display: flex;
-            overflow: auto;
+            overflow-y: auto;
             max-height: 500px;
         }
 
@@ -165,6 +165,7 @@
             min-width: 40px;
             border-right: 1px solid #dee2e6;
             white-space: pre;
+            overflow: hidden;
         }
 
         .editor-content {
@@ -183,7 +184,7 @@
             font-size: 13px;
             line-height: 1.5em;
             resize: both;
-            overflow: auto;
+            overflow: hidden;
             white-space: pre;
         }
 
@@ -654,6 +655,28 @@
         // Update preview with MathJax rendering
         function updatePreview() {
             let content = editor.value;
+            
+            // Convert Markdown image syntax to HTML img tags
+            // Pattern: ![alt](path){width=X% style="..."}
+            content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)(?:\{([^}]*)\})?/g, function(match, alt, src, attrs) {
+                let imgHtml = '<img src="' + src + '" alt="' + alt + '"';
+                if (attrs) {
+                    // Parse width and style attributes
+                    const widthMatch = attrs.match(/width=(\d+%)/);
+                    const styleMatch = attrs.match(/style="([^"]*)"/);
+                    if (widthMatch) {
+                        imgHtml += ' style="width: ' + widthMatch[1] + ';';
+                        if (styleMatch) {
+                            imgHtml += ' ' + styleMatch[1];
+                        }
+                        imgHtml += '"';
+                    } else if (styleMatch) {
+                        imgHtml += ' style="' + styleMatch[1] + '"';
+                    }
+                }
+                imgHtml += '>';
+                return imgHtml;
+            });
             
             // Convert line breaks to HTML
             content = content.replace(/\n/g, '<br>');
