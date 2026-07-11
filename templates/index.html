@@ -143,14 +143,15 @@
             position: relative;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            overflow: hidden;
+            overflow: auto;
             background: white;
+            max-height: 500px;
         }
 
         .editor-wrapper {
             display: flex;
-            overflow-y: auto;
-            max-height: 500px;
+            overflow: visible;
+            min-height: 500px;
         }
 
         .line-numbers {
@@ -165,7 +166,7 @@
             min-width: 40px;
             border-right: 1px solid #dee2e6;
             white-space: pre;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .editor-content {
@@ -184,7 +185,7 @@
             font-size: 13px;
             line-height: 1.5em;
             resize: both;
-            overflow: hidden;
+            overflow: auto;
             white-space: pre;
         }
 
@@ -623,6 +624,9 @@
         const previewContent = document.getElementById('previewContent');
         const lineNumbers = document.getElementById('lineNumbers');
         const saveStatus = document.getElementById('saveStatus');
+        
+        // Base directory for relative image paths (set when loading a file)
+        let imageBaseDir = '';
 
         // Update line numbers
         function updateLineNumbers() {
@@ -659,7 +663,13 @@
             // Convert Markdown image syntax to HTML img tags
             // Pattern: ![alt](path){width=X% style="..."}
             content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)(?:\{([^}]*)\})?/g, function(match, alt, src, attrs) {
-                let imgHtml = '<img src="' + src + '" alt="' + alt + '"';
+                let imgSrc = src;
+                // If the source is a relative path (not starting with http://, https://, or /), prepend the base directory
+                if (imageBaseDir && !src.match(/^https?:\/\//) && !src.startsWith('/')) {
+                    imgSrc = imageBaseDir + '/' + src;
+                }
+                
+                let imgHtml = '<img src="' + imgSrc + '" alt="' + alt + '"';
                 if (attrs) {
                     // Parse width and style attributes
                     const widthMatch = attrs.match(/width=(\d+%)/);
@@ -773,6 +783,14 @@
                     // Set filename in input field (without extension)
                     const filenameInput = document.getElementById('filenameInput');
                     filenameInput.value = filename.replace('.md', '');
+                    
+                    // Set image base directory for relative paths (imgs/ folder relative to the loaded file)
+                    if (result.file_dir) {
+                        imageBaseDir = result.file_dir;
+                    } else {
+                        imageBaseDir = '';
+                    }
+                    
                     updatePreview();
                     showStatus(`✅ 文件 "${filename}" 已加载`, 'success');
                 } else {
