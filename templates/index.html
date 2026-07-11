@@ -143,12 +143,7 @@
             position: relative;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            overflow: hidden;
             background: white;
-            max-height: 500px;
-        }
-
-        .editor-wrapper {
             display: flex;
             overflow: auto;
             min-height: 500px;
@@ -580,10 +575,8 @@
                 </div>
                 <!-- Editor with line numbers -->
                 <div class="editor-container">
-                    <div class="editor-wrapper">
-                        <div class="line-numbers" id="lineNumbers">1</div>
-                        <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
-                    </div>
+                    <div class="line-numbers" id="lineNumbers">1</div>
+                    <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
                 </div>
 
                 <div id="saveStatus" class="status-message"></div>
