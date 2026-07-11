@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import os
 from datetime import datetime
 
@@ -106,7 +106,7 @@ def load_file():
             content = f.read()
         
         # Get the directory of the loaded file for relative image paths
-        # Use /uploads/imgs as the base directory for images
+        # Use /uploads/imgs as the base directory for images (without trailing slash to avoid double path)
         file_dir = '/uploads/imgs'
         
         return jsonify({

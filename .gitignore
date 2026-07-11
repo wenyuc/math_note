@@ -1,16 +1,23 @@
 ```
-# Compiled Python files
-*.pyc
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Log files
+# Logs and temp files
 *.log
-server.log
+*.tmp
+*.swp
 
-# Environment files
+# Environment
 .env
 .env.local
 *.env.*
+
+# Editors
+.vscode/
+.idea/
 
 # Dependencies
 .venv/
@@ -22,20 +29,12 @@ dist/
 build/
 target/
 
-# Editors
-.vscode/
-.idea/
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Coverage reports
+# Coverage
+.coverage
 coverage/
 htmlcov/
-.coverage
 
-# Cache directories
-.mypy_cache/
+# Testing
 .pytest_cache/
+.mypy_cache/
 ```
