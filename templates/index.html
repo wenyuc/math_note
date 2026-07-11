@@ -143,13 +143,10 @@
             position: relative;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            overflow: hidden;
             background: white;
-        }
-
-        .editor-wrapper {
             display: flex;
             overflow: auto;
+            min-height: 500px;
             max-height: 500px;
         }
 
@@ -165,25 +162,23 @@
             min-width: 40px;
             border-right: 1px solid #dee2e6;
             white-space: pre;
-        }
-
-        .editor-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            overflow: visible;
+            flex-shrink: 0;
+            height: 100%;
         }
 
         #mathEditor {
-            width: 100%;
-            min-height: 450px;
+            flex: 1;
+            min-height: 100%;
             padding: 2px;
             border: none;
             outline: none;
             font-family: 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.5em;
-            resize: both;
-            overflow: auto;
+            resize: none;
+            overflow-x: auto;
+            overflow-y: auto;
             white-space: pre;
         }
 
@@ -574,10 +569,8 @@
                 </div>
                 <!-- Editor with line numbers -->
                 <div class="editor-container">
-                    <div class="editor-wrapper">
-                        <div class="line-numbers" id="lineNumbers">1</div>
-                        <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
-                    </div>
+                    <div class="line-numbers" id="lineNumbers">1</div>
+                    <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
                 </div>
 
                 <div id="saveStatus" class="status-message"></div>
@@ -622,6 +615,9 @@
         const previewContent = document.getElementById('previewContent');
         const lineNumbers = document.getElementById('lineNumbers');
         const saveStatus = document.getElementById('saveStatus');
+        
+        // Base directory for relative image paths (set when loading a file)
+        let imageBaseDir = '';
 
         // Update line numbers
         function updateLineNumbers() {
@@ -654,6 +650,37 @@
         // Update preview with MathJax rendering
         function updatePreview() {
             let content = editor.value;
+            
+            // Convert Markdown image syntax to HTML img tags
+            // Pattern: ![alt](path){width=X% style="..."}
+            content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)(?:\{([^}]*)\})?/g, function(match, alt, src, attrs) {
+                let imgSrc = src;
+                // If the source is a relative path (not starting with http://, https://, or /), prepend the base directory
+                if (imageBaseDir && !src.match(/^https?:\/\//) && !src.startsWith('/')) {
+                    imgSrc = imageBaseDir + '/' + src;
+                } else if (!src.match(/^https?:\/\//) && src.startsWith('imgs/')) {
+                    // Handle imgs/ prefix directly - already includes the folder name
+                    imgSrc = '/uploads/' + src;
+                }
+                
+                let imgHtml = '<img src="' + imgSrc + '" alt="' + alt + '"';
+                if (attrs) {
+                    // Parse width and style attributes
+                    const widthMatch = attrs.match(/width=(\d+%)/);
+                    const styleMatch = attrs.match(/style="([^"]*)"/);
+                    if (widthMatch) {
+                        imgHtml += ' style="width: ' + widthMatch[1] + ';';
+                        if (styleMatch) {
+                            imgHtml += ' ' + styleMatch[1];
+                        }
+                        imgHtml += '"';
+                    } else if (styleMatch) {
+                        imgHtml += ' style="' + styleMatch[1] + '"';
+                    }
+                }
+                imgHtml += '>';
+                return imgHtml;
+            });
             
             // Convert line breaks to HTML
             content = content.replace(/\n/g, '<br>');
@@ -750,6 +777,14 @@
                     // Set filename in input field (without extension)
                     const filenameInput = document.getElementById('filenameInput');
                     filenameInput.value = filename.replace('.md', '');
+                    
+                    // Set image base directory for relative paths (imgs/ folder relative to the loaded file)
+                    if (result.file_dir) {
+                        imageBaseDir = result.file_dir;
+                    } else {
+                        imageBaseDir = '';
+                    }
+                    
                     updatePreview();
                     showStatus(`✅ 文件 "${filename}" 已加载`, 'success');
                 } else {

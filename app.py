@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import os
 from datetime import datetime
 
@@ -105,10 +105,15 @@ def load_file():
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         
+        # Get the directory of the loaded file for relative image paths
+        # Use /uploads as the base directory for images (without trailing slash to avoid double path)
+        file_dir = '/uploads'
+        
         return jsonify({
             'success': True,
             'content': content,
-            'filename': filename
+            'filename': filename,
+            'file_dir': file_dir
         })
     except Exception as e:
         return jsonify({
@@ -184,6 +189,11 @@ def upload_image():
             'success': False,
             'message': f'Error processing image: {str(e)}'
         }), 500
+
+@app.route('/uploads/<path:filename>')
+def serve_uploads(filename):
+    """Serve files from the uploads directory"""
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5002, threaded=True)
