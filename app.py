@@ -106,8 +106,8 @@ def load_file():
             content = f.read()
         
         # Get the directory of the loaded file for relative image paths
-        # Use /uploads/imgs as the base directory for images (without trailing slash to avoid double path)
-        file_dir = '/uploads/imgs'
+        # Use /uploads as the base directory for images (without trailing slash to avoid double path)
+        file_dir = '/uploads'
         
         return jsonify({
             'success': True,

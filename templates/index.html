@@ -143,15 +143,16 @@
             position: relative;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            overflow: auto;
+            overflow: hidden;
             background: white;
             max-height: 500px;
         }
 
         .editor-wrapper {
             display: flex;
-            overflow: visible;
+            overflow: auto;
             min-height: 500px;
+            max-height: 500px;
         }
 
         .line-numbers {
@@ -167,12 +168,14 @@
             border-right: 1px solid #dee2e6;
             white-space: pre;
             overflow: visible;
+            flex-shrink: 0;
         }
 
         .editor-content {
             flex: 1;
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         #mathEditor {
@@ -185,7 +188,8 @@
             font-size: 13px;
             line-height: 1.5em;
             resize: both;
-            overflow: auto;
+            overflow-x: auto;
+            overflow-y: hidden;
             white-space: pre;
         }
 
