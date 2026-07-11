@@ -143,7 +143,7 @@
             position: relative;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            overflow: auto;
+            overflow: hidden;
             background: white;
             max-height: 500px;
         }
@@ -185,7 +185,7 @@
             font-size: 13px;
             line-height: 1.5em;
             resize: both;
-            overflow: auto;
+            overflow: hidden;
             white-space: pre;
         }
 
@@ -667,6 +667,9 @@
                 // If the source is a relative path (not starting with http://, https://, or /), prepend the base directory
                 if (imageBaseDir && !src.match(/^https?:\/\//) && !src.startsWith('/')) {
                     imgSrc = imageBaseDir + '/' + src;
+                } else if (!src.match(/^https?:\/\//) && src.startsWith('imgs/')) {
+                    // Handle imgs/ prefix directly
+                    imgSrc = '/uploads/' + src;
                 }
                 
                 let imgHtml = '<img src="' + imgSrc + '" alt="' + alt + '"';
