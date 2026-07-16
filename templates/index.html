@@ -69,22 +69,57 @@
             padding: 15px;
         }
 
-        .main-content {
+        /* Panels header - fixed headers above scroll area */
+        .panels-header {
             display: flex;
+            padding: 20px 20px 10px 20px;
             gap: 20px;
-            padding: 20px;
         }
 
-        .editor-section {
+        .editor-header-panel {
             flex: 1;
-            min-width: 50%;
+            min-width: 0;
         }
 
-        .preview-section {
+        .preview-header-panel {
             flex: 1;
-            min-width: 50%;
-            border-left: 3px solid #667eea;
+            min-width: 0;
             padding-left: 20px;
+        }
+
+        /* Shared scroll container */
+        .shared-scroll-container {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            height: 500px;
+            margin: 0 20px 20px 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .panels-wrapper {
+            display: flex;
+            min-height: 100%;
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .preview-panel {
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .panel-divider {
+            width: 3px;
+            background: #667eea;
+            flex-shrink: 0;
         }
 
         .section-title {
@@ -141,16 +176,16 @@
         /* Editor with line numbers */
         .editor-container {
             position: relative;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
             background: white;
             display: flex;
-            overflow: auto;
-            min-height: 500px;
-            max-height: 500px;
+            border-radius: 8px;
         }
 
         .line-numbers {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            align-self: flex-start;
             background: #f5f5f5;
             color: #888;
             padding: 2px 5px;
@@ -162,14 +197,12 @@
             min-width: 40px;
             border-right: 1px solid #dee2e6;
             white-space: pre;
-            overflow: visible;
+            overflow: hidden;
             flex-shrink: 0;
-            height: 100%;
         }
 
         #mathEditor {
             flex: 1;
-            min-height: 100%;
             padding: 2px;
             border: none;
             outline: none;
@@ -178,7 +211,7 @@
             line-height: 1.5em;
             resize: none;
             overflow-x: auto;
-            overflow-y: auto;
+            overflow-y: hidden;
             white-space: pre;
         }
 
@@ -188,12 +221,8 @@
 
         /* Preview area */
         .preview-container {
-            border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 15px;
-            min-height: 500px;
-            max-height: 500px;
-            overflow: auto;
             background: #fafafa;
         }
 
@@ -399,15 +428,21 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .main-content {
+            .panels-header {
                 flex-direction: column;
             }
 
-            .preview-section {
-                border-left: none;
-                border-top: 3px solid #667eea;
+            .preview-header-panel {
                 padding-left: 0;
-                padding-top: 20px;
+            }
+
+            .panels-wrapper {
+                flex-direction: column;
+            }
+
+            .panel-divider {
+                width: 100%;
+                height: 3px;
             }
         }
 
@@ -569,9 +604,9 @@
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="editor-section">
-                <!-- Editor header with title and filename input in one row -->
+        <!-- Headers above scroll area -->
+        <div class="panels-header">
+            <div class="editor-header-panel">
                 <div class="editor-header">
                     <div class="editor-title">编辑器</div>
                     <div class="filename-input-container" style="margin-bottom: 0; flex: 1;">
@@ -579,22 +614,31 @@
                         <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
                     </div>
                 </div>
-                <!-- Editor with line numbers -->
-                <div class="editor-container">
-                    <div class="line-numbers" id="lineNumbers">1</div>
-                    <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
-                </div>
-
-                <div id="saveStatus" class="status-message"></div>
             </div>
-
-            <div class="preview-section">
+            <div class="preview-header-panel">
                 <div class="section-title">实时预览</div>
-                <div class="preview-container">
-                    <div id="previewContent"></div>
+            </div>
+        </div>
+
+        <!-- Shared scroll container with both panels -->
+        <div class="shared-scroll-container" id="sharedScrollContainer">
+            <div class="panels-wrapper">
+                <div class="editor-panel">
+                    <div class="editor-container">
+                        <div class="line-numbers" id="lineNumbers">1</div>
+                        <textarea id="mathEditor" placeholder="在此输入数学笔记，支持 LaTeX 公式...&#10;&#10;例如：&#10;$E = mc^2$&#10;$\int_{0}^{\infty} e^{-x^2} dx$&#10;$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$"></textarea>
+                    </div>
+                </div>
+                <div class="panel-divider"></div>
+                <div class="preview-panel">
+                    <div class="preview-container">
+                        <div id="previewContent"></div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div id="saveStatus" class="status-message"></div>
 
         <div class="action-buttons">
             <button class="btn btn-save" onclick="saveNote()">
@@ -627,6 +671,8 @@
         const previewContent = document.getElementById('previewContent');
         const lineNumbers = document.getElementById('lineNumbers');
         const saveStatus = document.getElementById('saveStatus');
+        const sharedScrollContainer = document.getElementById('sharedScrollContainer');
+        const editorPanel = document.querySelector('.editor-panel');
         
         // Base directory for relative image paths (set when loading a file)
         let imageBaseDir = '';
@@ -634,7 +680,7 @@
         // Update line numbers
         function updateLineNumbers() {
             const lines = editor.value.split('\n');
-            const lineCount = Math.max(lines.length, 20);
+            const lineCount = Math.max(lines.length, 42);
             let lineNumHTML = '';
             for (let i = 1; i <= lineCount; i++) {
                 if (i > 1) {
@@ -657,6 +703,7 @@
             
             updatePreview();
             updateLineNumbers();
+            syncHeights();
         }
 
         // Update preview with MathJax rendering
@@ -798,6 +845,7 @@
                     }
                     
                     updatePreview();
+                    syncHeights();
                     showStatus(`✅ 文件 "${filename}" 已加载`, 'success');
                 } else {
                     showStatus(`❌ ${result.message}`, 'error');
@@ -860,6 +908,7 @@
                     
                     showStatus(`✅ ${result.message}`, 'success');
                     updatePreview();
+                    syncHeights();
                 } else {
                     showStatus(`❌ ${result.message}`, 'error');
                 }
@@ -882,15 +931,38 @@
             }, 5000);
         }
 
+        // Sync heights so the shared scroll container has enough range
+        function syncHeights() {
+            const editorHeight = editor.scrollHeight;
+            const previewHeight = document.querySelector('.preview-container').scrollHeight;
+            const maxH = Math.max(editorHeight, previewHeight, 500);
+            document.querySelector('.panels-wrapper').style.minHeight = maxH + 'px';
+            lineNumbers.style.height = editorHeight + 'px';
+        }
+
+        // Shared vertical scroll: sync both panels and line numbers
+        sharedScrollContainer.addEventListener('scroll', () => {
+            const scrollTop = sharedScrollContainer.scrollTop;
+            editorPanel.scrollTop = scrollTop;
+            document.querySelector('.preview-panel').scrollTop = scrollTop;
+            lineNumbers.style.transform = 'translateY(' + scrollTop + 'px)';
+        });
+
+        // Editor horizontal scroll: sync line-numbers horizontally
+        editorPanel.addEventListener('scroll', () => {
+            lineNumbers.scrollLeft = editorPanel.scrollLeft;
+        });
+
         // Event listeners
-        editor.addEventListener('input', updatePreview);
-        editor.addEventListener('scroll', () => {
-            lineNumbers.scrollTop = editor.scrollTop;
+        editor.addEventListener('input', () => {
+            updatePreview();
+            syncHeights();
         });
 
         // Initialize
         updateLineNumbers();
         updatePreview();
+        syncHeights();
         loadFileList();
     </script>
 </body>
