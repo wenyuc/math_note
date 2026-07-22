@@ -91,7 +91,7 @@
         .shared-scroll-container {
             overflow-y: scroll;
             overflow-x: hidden;
-            height: 500px;
+            height: 820px;
             margin: 0 20px 20px 20px;
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -191,8 +191,8 @@
             padding: 2px 5px;
             text-align: right;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.5em;
+            font-size: 16px;
+            line-height: 1.6em;
             user-select: none;
             min-width: 40px;
             border-right: 1px solid #dee2e6;
@@ -207,7 +207,7 @@
             border: none;
             outline: none;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 16px;
             line-height: 1.5em;
             resize: none;
             overflow-x: auto;
@@ -935,7 +935,7 @@
         function syncHeights() {
             const editorHeight = editor.scrollHeight;
             const previewHeight = document.querySelector('.preview-container').scrollHeight;
-            const maxH = Math.max(editorHeight, previewHeight, 500);
+            const maxH = Math.max(editorHeight, previewHeight, 820);
             document.querySelector('.panels-wrapper').style.minHeight = maxH + 'px';
             lineNumbers.style.height = editorHeight + 'px';
         }
