@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数学笔记</title>
     <!-- MathJax for LaTeX rendering -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- marked for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Configure MathJax to process formulas on page load
         window.MathJax = {
@@ -229,6 +230,106 @@
         #previewContent {
             font-size: 16px;
             line-height: 1.6;
+            color: #333;
+            word-wrap: break-word;
+        }
+
+        #previewContent h1,
+        #previewContent h2,
+        #previewContent h3,
+        #previewContent h4,
+        #previewContent h5,
+        #previewContent h6 {
+            margin: 0.8em 0 0.4em;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        #previewContent h1 { font-size: 1.8em; border-bottom: 2px solid #eee; padding-bottom: 0.2em; }
+        #previewContent h2 { font-size: 1.5em; border-bottom: 1px solid #eee; padding-bottom: 0.2em; }
+        #previewContent h3 { font-size: 1.25em; }
+        #previewContent h4 { font-size: 1.1em; }
+
+        #previewContent p {
+            margin: 0.6em 0;
+        }
+
+        #previewContent ul,
+        #previewContent ol {
+            margin: 0.6em 0;
+            padding-left: 1.8em;
+        }
+
+        #previewContent li {
+            margin: 0.2em 0;
+        }
+
+        #previewContent blockquote {
+            margin: 0.8em 0;
+            padding: 0.4em 1em;
+            border-left: 4px solid #667eea;
+            background: #f4f5fb;
+            color: #555;
+        }
+
+        #previewContent code {
+            background: #f0f0f0;
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        #previewContent pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0.8em 0;
+        }
+
+        #previewContent pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        #previewContent table {
+            border-collapse: collapse;
+            margin: 0.8em 0;
+            width: auto;
+        }
+
+        #previewContent th,
+        #previewContent td {
+            border: 1px solid #dee2e6;
+            padding: 6px 12px;
+            text-align: left;
+        }
+
+        #previewContent th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        #previewContent a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        #previewContent a:hover {
+            text-decoration: underline;
+        }
+
+        #previewContent hr {
+            border: none;
+            border-top: 1px solid #dee2e6;
+            margin: 1em 0;
+        }
+
+        #previewContent img {
+            max-width: 100%;
         }
 
         /* Action buttons */
@@ -706,25 +807,44 @@
             syncHeights();
         }
 
-        // Update preview with MathJax rendering
+        // Update preview with Markdown + MathJax rendering
         function updatePreview() {
             let content = editor.value;
-            
-            // Convert Markdown image syntax to HTML img tags
-            // Pattern: ![alt](path){width=X% style="..."}
+
+            const mathStore = [];
+            const imgStore = [];
+
+            // 1. Protect LaTeX math so Markdown does not mangle it
+            //    Order matters: display math before inline math
+            content = content.replace(/\$\$([\s\S]+?)\$\$/g, function(m) {
+                mathStore.push(m);
+                return '%%%MATH' + (mathStore.length - 1) + '%%%';
+            });
+            content = content.replace(/\\\[([\s\S]+?)\\\]/g, function(m) {
+                mathStore.push(m);
+                return '%%%MATH' + (mathStore.length - 1) + '%%%';
+            });
+            content = content.replace(/\$([^\$\n]+?)\$/g, function(m) {
+                mathStore.push(m);
+                return '%%%MATH' + (mathStore.length - 1) + '%%%';
+            });
+            content = content.replace(/\\\(([\s\S]+?)\\\)/g, function(m) {
+                mathStore.push(m);
+                return '%%%MATH' + (mathStore.length - 1) + '%%%';
+            });
+
+            // 2. Protect custom image syntax: ![alt](path){width=X% style="..."}
             content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)(?:\{([^}]*)\})?/g, function(match, alt, src, attrs) {
                 let imgSrc = src;
-                // If the source is a relative path (not starting with http://, https://, or /), prepend the base directory
+                // If the source is a relative path (not http(s) or absolute), prepend the base directory
                 if (imageBaseDir && !src.match(/^https?:\/\//) && !src.startsWith('/')) {
                     imgSrc = imageBaseDir + '/' + src;
                 } else if (!src.match(/^https?:\/\//) && src.startsWith('imgs/')) {
-                    // Handle imgs/ prefix directly - already includes the folder name
                     imgSrc = '/uploads/' + src;
                 }
-                
+
                 let imgHtml = '<img src="' + imgSrc + '" alt="' + alt + '"';
                 if (attrs) {
-                    // Parse width and style attributes
                     const widthMatch = attrs.match(/width=(\d+%)/);
                     const styleMatch = attrs.match(/style="([^"]*)"/);
                     if (widthMatch) {
@@ -738,20 +858,40 @@
                     }
                 }
                 imgHtml += '>';
-                return imgHtml;
+                imgStore.push(imgHtml);
+                return '%%%IMG' + (imgStore.length - 1) + '%%%';
             });
-            
-            // Convert line breaks to HTML
-            content = content.replace(/\n/g, '<br>');
-            
-            previewContent.innerHTML = content;
-            
-            // Render MathJax - process both $...$ and $$...$$ directly
-            if (window.MathJax) {
-                MathJax.typesetPromise([previewContent]).catch((err) => console.log(err));
+
+            // 3. Render Markdown
+            if (window.marked) {
+                content = marked.parse(content, { gfm: true, breaks: true });
+            } else {
+                content = content.replace(/\n/g, '<br>');
             }
-            
+
+            // 4. Restore protected images and math
+            content = content.replace(/%%%IMG(\d+)%%%/g, function(m, i) {
+                return imgStore[Number(i)];
+            });
+            content = content.replace(/%%%MATH(\d+)%%%/g, function(m, i) {
+                return mathStore[Number(i)];
+            });
+
+            previewContent.innerHTML = content;
+
+            // Render MathJax (retries until the async library is ready)
+            typesetMath();
+
             updateLineNumbers();
+        }
+
+        // Typeset math, waiting for the async MathJax library if needed
+        function typesetMath() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([previewContent]).catch((err) => console.log(err));
+            } else {
+                setTimeout(typesetMath, 200);
+            }
         }
 
         // Save note
