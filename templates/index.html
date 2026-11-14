@@ -29,52 +29,57 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f3f5f8;
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 28px rgba(31, 41, 55, 0.08);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            text-align: center;
+            background: white;
+            color: #202531;
+            padding: 10px 24px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .header h1 {
-            font-size: 2em;
-            margin-bottom: 5px;
+            font-size: 1.2em;
+            margin-bottom: 2px;
+        }
+
+        .header p {
+            font-size: 0.85em;
+            line-height: 1.2;
         }
 
         /* Symbol toolbar - full width at top */
         .symbol-toolbar-container {
             width: 100%;
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .symbol-toolbar {
             background: white;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
         }
 
         /* Panels header - fixed headers above scroll area */
         .panels-header {
             display: flex;
-            padding: 20px 20px 10px 20px;
-            gap: 20px;
+            padding: 16px 20px 10px;
         }
 
         .editor-header-panel {
@@ -85,21 +90,24 @@
         .preview-header-panel {
             flex: 1;
             min-width: 0;
-            padding-left: 20px;
+            padding-left: 21px;
         }
 
         /* Shared scroll container */
         .shared-scroll-container {
-            overflow-y: scroll;
+            overflow-y: auto;
             overflow-x: hidden;
-            height: 820px;
+            height: min(820px, calc(100vh - 280px));
+            min-height: 420px;
             margin: 0 20px 20px 20px;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
+            scrollbar-gutter: stable;
         }
 
         .panels-wrapper {
             display: flex;
+            align-items: stretch;
             min-height: 100%;
         }
 
@@ -108,6 +116,7 @@
             min-width: 0;
             overflow-x: auto;
             overflow-y: hidden;
+            background: white;
         }
 
         .preview-panel {
@@ -115,11 +124,12 @@
             min-width: 0;
             overflow-x: auto;
             overflow-y: hidden;
+            background: #fafbfc;
         }
 
         .panel-divider {
-            width: 3px;
-            background: #667eea;
+            width: 1px;
+            background: #e5e7eb;
             flex-shrink: 0;
         }
 
@@ -140,6 +150,17 @@
 
         .symbol-group:last-child {
             margin-bottom: 0;
+        }
+
+        .symbol-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .symbol-row > .symbol-group {
+            flex: 1;
+            min-width: 0;
         }
 
         .symbol-group-title {
@@ -179,24 +200,20 @@
             position: relative;
             background: white;
             display: flex;
-            border-radius: 8px;
+            min-height: 100%;
         }
 
         .line-numbers {
-            position: sticky;
-            left: 0;
-            z-index: 1;
-            align-self: flex-start;
             background: #f5f5f5;
             color: #888;
-            padding: 2px 5px;
+            padding: 14px 8px;
             text-align: right;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
-            line-height: 1.6em;
+            font-size: 15px;
+            line-height: 24px;
             user-select: none;
-            min-width: 40px;
-            border-right: 1px solid #dee2e6;
+            min-width: 44px;
+            border-right: 1px solid #e5e7eb;
             white-space: pre;
             overflow: hidden;
             flex-shrink: 0;
@@ -204,12 +221,13 @@
 
         #mathEditor {
             flex: 1;
-            padding: 2px;
+            min-width: 0;
+            padding: 14px 12px;
             border: none;
             outline: none;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
-            line-height: 1.5em;
+            font-size: 15px;
+            line-height: 24px;
             resize: none;
             overflow-x: auto;
             overflow-y: hidden;
@@ -222,14 +240,14 @@
 
         /* Preview area */
         .preview-container {
-            border-radius: 8px;
-            padding: 15px;
-            background: #fafafa;
+            min-height: 100%;
+            padding: 14px 16px;
+            background: #fafbfc;
         }
 
         #previewContent {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.42;
             color: #333;
             word-wrap: break-word;
         }
@@ -240,9 +258,9 @@
         #previewContent h4,
         #previewContent h5,
         #previewContent h6 {
-            margin: 0.8em 0 0.4em;
+            margin: 0.55em 0 0.3em;
             font-weight: 600;
-            line-height: 1.3;
+            line-height: 1.25;
         }
 
         #previewContent h1 { font-size: 1.8em; border-bottom: 2px solid #eee; padding-bottom: 0.2em; }
@@ -251,22 +269,22 @@
         #previewContent h4 { font-size: 1.1em; }
 
         #previewContent p {
-            margin: 0.6em 0;
+            margin: 0.35em 0;
         }
 
         #previewContent ul,
         #previewContent ol {
-            margin: 0.6em 0;
-            padding-left: 1.8em;
+            margin: 0.35em 0;
+            padding-left: 1.6em;
         }
 
         #previewContent li {
-            margin: 0.2em 0;
+            margin: 0.1em 0;
         }
 
         #previewContent blockquote {
-            margin: 0.8em 0;
-            padding: 0.4em 1em;
+            margin: 0.5em 0;
+            padding: 0.3em 0.8em;
             border-left: 4px solid #667eea;
             background: #f4f5fb;
             color: #555;
@@ -283,10 +301,10 @@
         #previewContent pre {
             background: #2d2d2d;
             color: #f8f8f2;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 8px;
             overflow-x: auto;
-            margin: 0.8em 0;
+            margin: 0.5em 0;
         }
 
         #previewContent pre code {
@@ -297,7 +315,7 @@
 
         #previewContent table {
             border-collapse: collapse;
-            margin: 0.8em 0;
+            margin: 0.5em 0;
             width: auto;
         }
 
@@ -325,7 +343,7 @@
         #previewContent hr {
             border: none;
             border-top: 1px solid #dee2e6;
-            margin: 1em 0;
+            margin: 0.6em 0;
         }
 
         #previewContent img {
@@ -426,6 +444,28 @@
             color: #333;
             font-weight: 600;
             white-space: nowrap;
+        }
+
+        .preview-header-panel .section-title {
+            margin-bottom: 0;
+        }
+
+        .scale-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #555;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .scale-control select {
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            font-size: 13px;
         }
 
         /* File Manager */
@@ -529,8 +569,13 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             .panels-header {
                 flex-direction: column;
+                gap: 10px;
             }
 
             .preview-header-panel {
@@ -543,7 +588,22 @@
 
             .panel-divider {
                 width: 100%;
-                height: 3px;
+                height: 1px;
+            }
+
+            .preview-panel {
+                min-height: 320px;
+            }
+
+            .symbol-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .shared-scroll-container {
+                height: min(70vh, 820px);
+                min-height: 360px;
+                margin: 0 10px 16px;
             }
         }
 
@@ -563,6 +623,7 @@
         <div class="symbol-toolbar-container">
             <!-- Symbol toolbar -->
             <div class="symbol-toolbar">
+                <div class="symbol-row">
                     <div class="symbol-group">
                         <div class="symbol-group-title">几何符号</div>
                         <div class="symbol-buttons">
@@ -578,53 +639,6 @@
                             <button class="symbol-btn" onclick="insertSymbol('\\because')" title="因为">∵</button>
                         </div>
                     </div>
-
-                    <div class="symbol-group">
-                        <div class="symbol-group-title">希腊字母（小写）</div>
-                        <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('\\alpha')">α</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\beta')">β</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\gamma')">γ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\delta')">δ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\epsilon')">ε</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\zeta')">ζ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\eta')">η</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\theta')">θ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\iota')">ι</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\kappa')">κ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\lambda')">λ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\mu')">μ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\nu')">ν</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\xi')">ξ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\pi')">π</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\rho')">ρ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\sigma')">σ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\tau')">τ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\upsilon')">υ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\phi')">φ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\chi')">χ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\psi')">ψ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\omega')">ω</button>
-                        </div>
-                    </div>
-
-                    <div class="symbol-group">
-                        <div class="symbol-group-title">希腊字母（大写）</div>
-                        <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('\\Gamma')">Γ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Delta')">Δ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Theta')">Θ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Lambda')">Λ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Xi')">Ξ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Pi')">Π</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Sigma')">Σ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Upsilon')">Υ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Phi')">Φ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Psi')">Ψ</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\Omega')">Ω</button>
-                        </div>
-                    </div>
-
                     <div class="symbol-group">
                         <div class="symbol-group-title">常用运算</div>
                         <div class="symbol-buttons">
@@ -642,7 +656,54 @@
                             <button class="symbol-btn" onclick="insertSymbol('\\div')">÷</button>
                         </div>
                     </div>
+                </div>
 
+                <div class="symbol-group">
+                    <div class="symbol-group-title">希腊字母（小写）</div>
+                    <div class="symbol-buttons">
+                        <button class="symbol-btn" onclick="insertSymbol('\\alpha')">α</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\beta')">β</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\gamma')">γ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\delta')">δ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\epsilon')">ε</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\zeta')">ζ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\eta')">η</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\theta')">θ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\iota')">ι</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\kappa')">κ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\lambda')">λ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\mu')">μ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\nu')">ν</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\xi')">ξ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\pi')">π</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\rho')">ρ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\sigma')">σ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\tau')">τ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\upsilon')">υ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\phi')">φ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\chi')">χ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\psi')">ψ</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\omega')">ω</button>
+                    </div>
+                </div>
+
+                <div class="symbol-row">
+                    <div class="symbol-group">
+                        <div class="symbol-group-title">希腊字母（大写）</div>
+                        <div class="symbol-buttons">
+                            <button class="symbol-btn" onclick="insertSymbol('\\Gamma')">Γ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Delta')">Δ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Theta')">Θ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Lambda')">Λ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Xi')">Ξ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Pi')">Π</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Sigma')">Σ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Upsilon')">Υ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Phi')">Φ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Psi')">Ψ</button>
+                            <button class="symbol-btn" onclick="insertSymbol('\\Omega')">Ω</button>
+                        </div>
+                    </div>
                     <div class="symbol-group">
                         <div class="symbol-group-title">括号与集合</div>
                         <div class="symbol-buttons">
@@ -658,50 +719,53 @@
                             <button class="symbol-btn" onclick="insertSymbol('\\emptyset')">∅</button>
                         </div>
                     </div>
+                </div>
 
-                    <div class="symbol-group">
-                        <div class="symbol-group-title">关系符号</div>
-                        <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('=')">＝</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\neq')">≠</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\approx')">≈</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\leq')">≤</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\geq')">≥</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\lt')"><</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\gt')">&gt;</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\equiv')">≡</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\propto')">∝</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\leftarrow')">←</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\rightarrow')">→</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\leftrightarrow')">↔</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\longleftarrow')">←</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\longrightarrow')">→</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\longleftrightarrow')">↔</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\mapsto')">↦</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\hookleftarrow')">↩</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\hookrightarrow')">↪</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\longmapsto')">↦</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\forall')">∀</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\exists')">∃</button>
-                        </div>
-                    </div>
-
-                    <div class="symbol-group">
-                        <div class="symbol-group-title">带圈数字</div>
-                        <div class="symbol-buttons">
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{1}')">①</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{2}')">②</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{3}')">③</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{4}')">④</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{5}')">⑤</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{6}')">⑥</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{7}')">⑦</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{8}')">⑧</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{9}')">⑨</button>
-                            <button class="symbol-btn" onclick="insertSymbol('\\textcircled{10}')">⑩</button>
-                        </div>
+                <div class="symbol-group">
+                    <div class="symbol-group-title">关系符号</div>
+                    <div class="symbol-buttons">
+                        <button class="symbol-btn" onclick="insertSymbol('=')">＝</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\neq')">≠</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\approx')">≈</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\leq')">≤</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\geq')">≥</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\lt')"><</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\gt')">&gt;</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\equiv')">≡</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\propto')">∝</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\leftarrow')">←</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\rightarrow')">→</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\leftrightarrow')">↔</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\longleftarrow')">←</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\longrightarrow')">→</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\longleftrightarrow')">↔</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\mapsto')">↦</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\hookleftarrow')">↩</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\hookrightarrow')">↪</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\longmapsto')">↦</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\forall')">∀</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\exists')">∃</button>
                     </div>
                 </div>
+
+                <!--
+                <div class="symbol-group">
+                    <div class="symbol-group-title">带圈数字</div>
+                    <div class="symbol-buttons">
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{1}')">①</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{2}')">②</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{3}')">③</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{4}')">④</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{5}')">⑤</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{6}')">⑥</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{7}')">⑦</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{8}')">⑧</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{9}')">⑨</button>
+                        <button class="symbol-btn" onclick="insertSymbol('\\textcircled{10}')">⑩</button>
+                    </div>
+                </div>
+                -->
+
             </div>
         </div>
 
@@ -710,6 +774,18 @@
             <div class="editor-header-panel">
                 <div class="editor-header">
                     <div class="editor-title">编辑器</div>
+                    <label class="scale-control" for="editorScale">
+                        字号
+                        <select id="editorScale" aria-label="编辑器字号">
+                            <option value="0.8">80%</option>
+                            <option value="0.9">90%</option>
+                            <option value="1" selected>100%</option>
+                            <option value="1.1">110%</option>
+                            <option value="1.2">120%</option>
+                            <option value="1.3">130%</option>
+                            <option value="1.5">150%</option>
+                        </select>
+                    </label>
                     <div class="filename-input-container" style="margin-bottom: 0; flex: 1;">
                         <label for="filenameInput">文件名:</label>
                         <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
@@ -717,7 +793,21 @@
                 </div>
             </div>
             <div class="preview-header-panel">
-                <div class="section-title">实时预览</div>
+                <div class="editor-header">
+                    <div class="section-title">实时预览</div>
+                    <label class="scale-control" for="previewScale">
+                        字号
+                        <select id="previewScale" aria-label="实时预览字号">
+                            <option value="0.8">80%</option>
+                            <option value="0.9">90%</option>
+                            <option value="1" selected>100%</option>
+                            <option value="1.1">110%</option>
+                            <option value="1.2">120%</option>
+                            <option value="1.3">130%</option>
+                            <option value="1.5">150%</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -773,7 +863,8 @@
         const lineNumbers = document.getElementById('lineNumbers');
         const saveStatus = document.getElementById('saveStatus');
         const sharedScrollContainer = document.getElementById('sharedScrollContainer');
-        const editorPanel = document.querySelector('.editor-panel');
+        const editorScale = document.getElementById('editorScale');
+        const previewScale = document.getElementById('previewScale');
         
         // Base directory for relative image paths (set when loading a file)
         let imageBaseDir = '';
@@ -781,7 +872,7 @@
         // Update line numbers
         function updateLineNumbers() {
             const lines = editor.value.split('\n');
-            const lineCount = Math.max(lines.length, 42);
+            const lineCount = lines.length;
             let lineNumHTML = '';
             for (let i = 1; i <= lineCount; i++) {
                 if (i > 1) {
@@ -888,7 +979,9 @@
         // Typeset math, waiting for the async MathJax library if needed
         function typesetMath() {
             if (window.MathJax && MathJax.typesetPromise) {
-                MathJax.typesetPromise([previewContent]).catch((err) => console.log(err));
+                MathJax.typesetPromise([previewContent])
+                    .then(() => requestAnimationFrame(syncHeights))
+                    .catch((err) => console.error('MathJax rendering failed:', err));
             } else {
                 setTimeout(typesetMath, 200);
             }
@@ -1073,33 +1166,71 @@
 
         // Sync heights so the shared scroll container has enough range
         function syncHeights() {
-            const editorHeight = editor.scrollHeight;
-            const previewHeight = document.querySelector('.preview-container').scrollHeight;
-            const maxH = Math.max(editorHeight, previewHeight, 820);
-            document.querySelector('.panels-wrapper').style.minHeight = maxH + 'px';
-            lineNumbers.style.height = editorHeight + 'px';
+            const editorStyle = getComputedStyle(editor);
+            const lineHeight = parseFloat(editorStyle.lineHeight) || 24;
+            const verticalPadding =
+                parseFloat(editorStyle.paddingTop) + parseFloat(editorStyle.paddingBottom);
+            const editorContentHeight = editor.value.split('\n').length * lineHeight + verticalPadding;
+            const previewContainer = document.querySelector('.preview-container');
+            const previewStyle = getComputedStyle(previewContainer);
+            const previewHeight = previewContent.scrollHeight +
+                parseFloat(previewStyle.paddingTop) + parseFloat(previewStyle.paddingBottom);
+            const panelsWrapper = document.querySelector('.panels-wrapper');
+            const editorContainer = document.querySelector('.editor-container');
+            const isStacked = window.matchMedia('(max-width: 768px)').matches;
+
+            if (isStacked) {
+                panelsWrapper.style.height = 'auto';
+                editorContainer.style.height = Math.max(
+                    editorContentHeight,
+                    sharedScrollContainer.clientHeight
+                ) + 'px';
+                editor.style.height = editorContainer.style.height;
+                lineNumbers.style.height = editorContainer.style.height;
+            } else {
+                const contentHeight = Math.max(
+                    editorContentHeight,
+                    previewHeight,
+                    sharedScrollContainer.clientHeight
+                );
+                panelsWrapper.style.height = contentHeight + 'px';
+                editorContainer.style.height = contentHeight + 'px';
+                editor.style.height = contentHeight + 'px';
+                lineNumbers.style.height = contentHeight + 'px';
+            }
         }
 
-        // Shared vertical scroll: sync both panels and line numbers
-        sharedScrollContainer.addEventListener('scroll', () => {
-            const scrollTop = sharedScrollContainer.scrollTop;
-            editorPanel.scrollTop = scrollTop;
-            document.querySelector('.preview-panel').scrollTop = scrollTop;
-            lineNumbers.style.transform = 'translateY(' + scrollTop + 'px)';
-        });
+        function applyEditorScale() {
+            const fontSize = 15 * Number(editorScale.value);
+            const lineHeight = fontSize * 1.6;
+            editor.style.fontSize = fontSize + 'px';
+            editor.style.lineHeight = lineHeight + 'px';
+            lineNumbers.style.fontSize = fontSize + 'px';
+            lineNumbers.style.lineHeight = lineHeight + 'px';
+            syncHeights();
+        }
 
-        // Editor horizontal scroll: sync line-numbers horizontally
-        editorPanel.addEventListener('scroll', () => {
-            lineNumbers.scrollLeft = editorPanel.scrollLeft;
-        });
+        function applyPreviewScale() {
+            previewContent.style.fontSize = (14 * Number(previewScale.value)) + 'px';
+            syncHeights();
+        }
 
         // Event listeners
         editor.addEventListener('input', () => {
             updatePreview();
             syncHeights();
         });
+        editorScale.addEventListener('change', applyEditorScale);
+        previewScale.addEventListener('change', applyPreviewScale);
+        window.addEventListener('resize', syncHeights);
+
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(syncHeights).observe(previewContent);
+        }
 
         // Initialize
+        applyEditorScale();
+        applyPreviewScale();
         updateLineNumbers();
         updatePreview();
         syncHeights();
