@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import os
+import uuid
 from datetime import datetime
 
 app = Flask(__name__)
@@ -188,6 +189,40 @@ def upload_image():
         return jsonify({
             'success': False,
             'message': f'Error processing image: {str(e)}'
+        }), 500
+
+@app.route('/upload_note_image', methods=['POST'])
+def upload_note_image():
+    """Save an image and return its URL for insertion into a note."""
+    image_file = request.files.get('image')
+    if not image_file or not image_file.filename:
+        return jsonify({
+            'success': False,
+            'message': '请选择图片文件'
+        }), 400
+
+    extension = os.path.splitext(image_file.filename)[1].lower()
+    if extension not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'):
+        return jsonify({
+            'success': False,
+            'message': '仅支持 PNG、JPG、GIF、WEBP 或 BMP 图片'
+        }), 400
+
+    try:
+        filename = f'note_image_{uuid.uuid4().hex}{extension}'
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        image_file.save(filepath)
+
+        return jsonify({
+            'success': True,
+            'message': '图片上传成功',
+            'filename': filename,
+            'image_url': f'/uploads/{filename}'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'图片上传失败：{str(e)}'
         }), 500
 
 @app.route('/uploads/<path:filename>')
