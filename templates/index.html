@@ -350,6 +350,11 @@
             max-width: 100%;
         }
 
+        #previewContent img.note-image-selected {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
         /* Action buttons */
         .action-buttons {
             display: flex;
@@ -434,9 +439,23 @@
 
         .editor-header {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 15px;
             margin-bottom: 10px;
+        }
+
+        .editor-header .btn {
+            padding: 6px 10px;
+            font-size: 12px;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .image-size-hint {
+            color: #777;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
         .editor-title {
@@ -608,7 +627,8 @@
         }
 
         /* Hidden file input */
-        #imageInput {
+        #imageInput,
+        #noteImageInput {
             display: none;
         }
     </style>
@@ -786,6 +806,13 @@
                             <option value="1.5">150%</option>
                         </select>
                     </label>
+                    <button class="btn btn-image" onclick="document.getElementById('noteImageInput').click()" title="选择图片并插入 Markdown 图片语法">
+                        📷 插入图片
+                    </button>
+                    <input type="file" id="noteImageInput" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp" onchange="handleNoteImageUpload(event)">
+                    <button class="btn btn-refresh" onclick="resizeSelectedImage(-25)" title="选中预览图片后缩小">−</button>
+                    <button class="btn btn-refresh" onclick="resizeSelectedImage(25)" title="选中预览图片后放大">＋</button>
+                    <span class="image-size-hint">点击预览图片后可调整大小</span>
                     <div class="filename-input-container" style="margin-bottom: 0; flex: 1;">
                         <label for="filenameInput">文件名:</label>
                         <input type="text" id="filenameInput" placeholder="输入文件名（例如：math_note_2025）" value="">
@@ -868,6 +895,7 @@
         
         // Base directory for relative image paths (set when loading a file)
         let imageBaseDir = '';
+        let selectedImageIndex = null;
 
         // Update line numbers
         function updateLineNumbers() {
@@ -934,18 +962,19 @@
                     imgSrc = '/uploads/' + src;
                 }
 
-                let imgHtml = '<img src="' + imgSrc + '" alt="' + alt + '"';
+                const imageIndex = imgStore.length;
+                let imgHtml = '<img src="' + escapeHtmlAttribute(imgSrc) + '" alt="' + escapeHtmlAttribute(alt) + '" data-note-image-index="' + imageIndex + '"';
                 if (attrs) {
-                    const widthMatch = attrs.match(/width=(\d+%)/);
+                    const widthMatch = attrs.match(/width=(\d+(?:\.\d+)?(?:px|%))/);
+                    const heightMatch = attrs.match(/height=(\d+(?:\.\d+)?(?:px|%))/);
                     const styleMatch = attrs.match(/style="([^"]*)"/);
-                    if (widthMatch) {
-                        imgHtml += ' style="width: ' + widthMatch[1] + ';';
-                        if (styleMatch) {
-                            imgHtml += ' ' + styleMatch[1];
-                        }
-                        imgHtml += '"';
-                    } else if (styleMatch) {
-                        imgHtml += ' style="' + styleMatch[1] + '"';
+                    const imageStyles = [];
+                    if (widthMatch) imageStyles.push('width: ' + widthMatch[1]);
+                    if (heightMatch) imageStyles.push('height: ' + heightMatch[1]);
+                    if (widthMatch || heightMatch) imageStyles.push('object-fit: contain');
+                    if (styleMatch) imageStyles.push(styleMatch[1]);
+                    if (imageStyles.length) {
+                        imgHtml += ' style="' + escapeHtmlAttribute(imageStyles.join('; ')) + '"';
                     }
                 }
                 imgHtml += '>';
@@ -969,11 +998,113 @@
             });
 
             previewContent.innerHTML = content;
+            previewContent.querySelectorAll('img[data-note-image-index]').forEach((image) => {
+                if (Number(image.dataset.noteImageIndex) === selectedImageIndex) {
+                    image.classList.add('note-image-selected');
+                }
+            });
 
             // Render MathJax (retries until the async library is ready)
             typesetMath();
 
             updateLineNumbers();
+        }
+
+        function escapeHtmlAttribute(value) {
+            return String(value).replace(/[&<>"']/g, (character) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function getNoteImageMatches() {
+            const matches = [];
+            const expression = /!\[([^\]]*)\]\(([^)]+)\)(?:\{([^}]*)\})?/g;
+            let match;
+            while ((match = expression.exec(editor.value)) !== null) {
+                matches.push({
+                    start: match.index,
+                    end: expression.lastIndex,
+                    markdown: match[0],
+                    alt: match[1],
+                    src: match[2],
+                    attrs: match[3] || ''
+                });
+            }
+            return matches;
+        }
+
+        function resizeSelectedImage(change) {
+            const images = getNoteImageMatches();
+            if (selectedImageIndex === null || !images[selectedImageIndex]) {
+                showStatus('请先点击右侧预览中的图片，再调整大小', 'error');
+                return;
+            }
+
+            const image = images[selectedImageIndex];
+            const widthMatch = image.attrs.match(/width=(\d+(?:\.\d+)?)(px|%)/);
+            const heightMatch = image.attrs.match(/height=(\d+(?:\.\d+)?)(px|%)/);
+            const width = Math.min(800, Math.max(25, (widthMatch && widthMatch[2] === 'px' ? Number(widthMatch[1]) : 50) + change));
+            const height = Math.min(800, Math.max(25, (heightMatch && heightMatch[2] === 'px' ? Number(heightMatch[1]) : 50) + change));
+            const attrs = image.attrs
+                .replace(/(?:^|\s)width=\d+(?:\.\d+)?(?:px|%)/, '')
+                .replace(/(?:^|\s)height=\d+(?:\.\d+)?(?:px|%)/, '')
+                .trim();
+            const updatedMarkdown = `![${image.alt}](${image.src}){${attrs ? attrs + ' ' : ''}width=${width}px height=${height}px}`;
+
+            editor.value = editor.value.substring(0, image.start) + updatedMarkdown + editor.value.substring(image.end);
+            editor.setSelectionRange(image.start, image.start + updatedMarkdown.length);
+            updatePreview();
+            syncHeights();
+        }
+
+        previewContent.addEventListener('click', (event) => {
+            const image = event.target.closest('img[data-note-image-index]');
+            if (!image) return;
+            selectedImageIndex = Number(image.dataset.noteImageIndex);
+            previewContent.querySelectorAll('.note-image-selected').forEach((selected) => {
+                selected.classList.remove('note-image-selected');
+            });
+            image.classList.add('note-image-selected');
+        });
+
+        // Upload an image and insert its Markdown reference into the editor
+        async function handleNoteImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('/upload_note_image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showStatus(`❌ ${result.message || '图片上传失败'}`, 'error');
+                    return;
+                }
+
+                const markdown = `![${file.name.replace(/[\[\]]/g, '')}](${result.image_url}){width=50px height=50px}`;
+                const start = editor.selectionStart;
+                editor.value = editor.value.substring(0, start) + markdown + editor.value.substring(editor.selectionEnd);
+                selectedImageIndex = getNoteImageMatches().findIndex((image) => image.start === start);
+                editor.focus();
+                editor.setSelectionRange(start, start + markdown.length);
+                updatePreview();
+                syncHeights();
+                showStatus('✅ 图片已插入，点击预览图片后可调整大小', 'success');
+            } catch (error) {
+                showStatus(`❌ 图片上传失败：${error.message}`, 'error');
+            } finally {
+                event.target.value = '';
+            }
         }
 
         // Typeset math, waiting for the async MathJax library if needed
@@ -1217,6 +1348,7 @@
 
         // Event listeners
         editor.addEventListener('input', () => {
+            selectedImageIndex = null;
             updatePreview();
             syncHeights();
         });
